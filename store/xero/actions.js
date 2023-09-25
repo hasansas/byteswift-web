@@ -144,35 +144,6 @@ export default {
         return resData
       }).then(async data => {
         const xeroInvoices = data.Invoices
-        const invoices = []
-
-        // for (let index = 0; index < xeroInvoices.length; index++) {
-        //   const _item = xeroInvoices[index];
-        //   const _contact = _item.Contact
-
-        //   // get contact detail
-        //   const _getContactUrl = 'v1/xero/contacts/' + _contact.ContactID
-        //   const _getContact = await httpRequest.get(_getContactUrl, _headers)
-        //   if (_getContact.success) {
-        //     const _getContactData = _getContact.data.data
-        //     const _contactItem = _getContactData.Contacts.length > 0 ? _getContactData.Contacts[0] : null
-        //     if (_contactItem !== null) {
-        //       let phone = null
-
-        //       const mobilePhone = _contactItem.Phones.find(e => e.PhoneType === 'MOBILE')
-        //       if (typeof mobilePhone !== 'undefined') {
-        //         if (mobilePhone.PhoneCountryCode && mobilePhone.PhoneAreaCode && mobilePhone.PhoneNumber) {
-        //           phone = mobilePhone.PhoneCountryCode + mobilePhone.PhoneAreaCode + mobilePhone.PhoneNumber
-        //         }
-
-        //         _contactItem.Phone = phone
-        //         _item.Contact = _contactItem
-
-        //         invoices.push(_item)
-        //       }
-        //     }
-        //   }
-        // }
 
         // set response
         resolve(
