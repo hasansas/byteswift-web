@@ -167,10 +167,7 @@
     </template>
 
     <!-- get contacts -->
-    <v-dialog v-model="contacts.dialog" eager width="500">
-      <!-- <v-toolbar flat>
-        <v-toolbar-title> Send Messgae </v-toolbar-title>
-      </v-toolbar> -->
+    <v-dialog v-model="contacts.dialog" persistent eager width="500">
       <v-card flat height="540" class="overflow-hidden">
         <v-container v-if="contacts.isLoading" class="fill-height">
           <v-row class="text-center">
@@ -179,7 +176,20 @@
                 <v-container class="fill-height">
                   <v-row class="text-center">
                     <v-col>
-                      <div class="sync-loader"></div>
+                      <v-avatar
+                        v-if="createMessage.state === 'error'"
+                        width="180"
+                        height="180"
+                        color="red lighten-5 "
+                      >
+                        <v-icon size="48" color="red"> ri-alert-line </v-icon>
+                      </v-avatar>
+                      <img
+                        v-else-if="createMessage.state === 'success'"
+                        width="200"
+                        src="~/assets/img/check-success.jpg"
+                      />
+                      <div v-else class="sync-loader"></div>
                     </v-col>
                   </v-row>
                 </v-container>
@@ -190,6 +200,18 @@
                 </span>
                 {{ createMessage.value }}
               </div>
+              <v-btn
+                v-if="
+                  createMessage.state === 'error' ||
+                  createMessage.state === 'success'
+                "
+                depressed
+                color="secondary"
+                @click="contacts.dialog = !contacts.dialog"
+                class="mt-8 px-8"
+              >
+                Close
+              </v-btn>
             </v-col>
           </v-row>
         </v-container>
@@ -356,11 +378,21 @@ export default {
     },
     async sendMessage() {
       this.contacts.dialog = true;
-      console.log("start");
-      await this.getContact();
-      console.log("end");
+
+      // get xero contacts
+      const contacts = await this.getContact();
+
+      // qontak createBroadcast
+      const contactListName = "Invoice " + this.$moment().format("YYYY-MM-DD");
+      await this.createBroadcast({
+        name: contactListName,
+        contacts: contacts,
+      });
     },
     async getContact() {
+      this.createMessage.state = "get_contact";
+      this.createMessage.value = "";
+
       const invoices = this.dataTable.rows;
       const contacts = [];
 
@@ -378,21 +410,69 @@ export default {
 
         if (_getContact.success) {
           const _contactData = _getContact.data;
-
-          console.log(_contactData.Name);
-          const _contactItem = {
-            full_name: `${_contactData.FirstName} ${_contactData.LastName}`,
-            customer_name: "",
-            company: "",
-          };
-          contacts.push(_contactItem);
+          contacts.push(_contactData);
         }
       }
 
+      return contacts;
+    },
+    async createBroadcast({ name, contacts }) {
+      // create broadcast recipient
       this.createMessage.state = "create_contact_list";
       this.createMessage.value = "Creating contacts list";
+
+      const _contacts = [];
+      for (let index = 0; index < contacts.length; index++) {
+        const _contact = contacts[index];
+        const _contactName = `${_contact.FirstName} ${_contact.LastName}`;
+        const _item = {
+          phone_number: _contact.Phone,
+          full_name: _contactName,
+          customer_name: _contact.Name !== "" ? _contact.Name : _contactName,
+          company: _contact.Name !== "" ? _contact.Name : _contactName,
+        };
+        _contacts.push(_item);
+      }
+
+      const _createRecipient = await this.$store.dispatch(
+        "qontak/createBroadcastRecipient",
+        {
+          name: name,
+          contacts: _contacts,
+        }
+      );
+
+      if (!_createRecipient.success) {
+        this.createMessage.state = "error";
+        this.createMessage.value = "unable to create contact list";
+        return;
+      }
+
+      // sendng broadcast
+      this.createMessage.state = "create_broadcasr";
+      this.createMessage.value = "Creating Broadcast";
+
+      const broadcastName = "Invoice " + this.$moment().format("YYYY-MM-DD");
+      const messageTemplateId = "820b09af-6650-46d4-9922-2112e86409e4";
+      const contactListId = _createRecipient.data.data.id;
+      const parameters = {
+        body: [],
+      };
+
+      const _createBroadcast = await this.$store.dispatch(
+        "qontak/createBroadcast",
+        { name: broadcastName, messageTemplateId, contactListId, parameters }
+      );
+
+      if (!_createBroadcast.success) {
+        this.createMessage.state = "error";
+        this.createMessage.value = "unable to create broadcast";
+        return;
+      }
+
+      this.createMessage.state = "success";
+      this.createMessage.value = "Message has been successfully sent ";
     },
-    getCreateCsv() {},
   },
   mounted() {
     this.getTenant();
