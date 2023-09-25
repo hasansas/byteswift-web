@@ -7,7 +7,10 @@
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
-    "test": "jest"
+    "test": "jest",
+    "pm2:start": "pm2 start \"npm run build && npm run start\" --name byteswift-web",
+    "pm2:restart": "pm2 restart byteswift-web --update-env",
+    "pm2:stop": "pm2 delete byteswift-web"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
