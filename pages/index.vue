@@ -331,8 +331,8 @@ export default {
     async loginXero() {
       const apiUrl = "https://login.xero.com/identity/connect/authorize";
       const responseType = "code";
-      const clientId = "45B08F8BF1C04B09ACA01C20C037CBF5";
-      const redirectUri = "http://localhost:3000/xero/callback";
+      const clientId = process.env.XERO_CLIENT_ID;
+      const redirectUri = process.env.XERO_REDIRECT_URI;
       const scope =
         "openid profile email accounting.transactions offline_access";
       const state = Math.floor(Math.random() * 9000 + 1000);
