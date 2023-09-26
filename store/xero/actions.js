@@ -14,7 +14,7 @@ export default {
       const _body = {
         grant_type: 'authorization_code',
         code: code,
-        redirect_uri: 'http://localhost:3000/xero/callback',
+        redirect_uri: process.env.XERO_REDIRECT_URI,
       }
 
       // send request
