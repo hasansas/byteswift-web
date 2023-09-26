@@ -453,7 +453,7 @@ export default {
       this.createMessage.value = "Creating Broadcast";
 
       const broadcastName = "Invoice " + this.$moment().format("YYYY-MM-DD");
-      const messageTemplateId = "820b09af-6650-46d4-9922-2112e86409e4";
+      const messageTemplateId = process.env.QONTAK_TEMPLATE_ID;
       const contactListId = _createRecipient.data.data.id;
       const parameters = {
         body: [],
