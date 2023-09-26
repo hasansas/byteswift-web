@@ -10,12 +10,12 @@ export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: true,
 
-  // Target: https://go.nuxtjs.dev/config-target
-  target: 'static',
+  // Target: [server, static] https://go.nuxtjs.dev/config-target
+  target: 'server', 
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - admin',
+    titleTemplate: '%s - Byteswift',
     title: 'admin',
     htmlAttrs: {
       lang: 'en'
