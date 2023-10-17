@@ -181,13 +181,24 @@ export default {
         if (_contactItem !== null) {
           let phone = null
 
+          // get mobile phone
           const mobilePhone = _contactItem.Phones.find(e => e.PhoneType === 'MOBILE')
           if (typeof mobilePhone !== 'undefined') {
             if (mobilePhone.PhoneCountryCode && mobilePhone.PhoneAreaCode && mobilePhone.PhoneNumber) {
               phone = mobilePhone.PhoneCountryCode + mobilePhone.PhoneAreaCode + mobilePhone.PhoneNumber
             }
-
             _contactItem.Phone = phone
+          }
+
+          if (phone === null) {
+            // get default phone
+            const defaultPhone = _contactItem.Phones.find(e => e.PhoneType === 'DEFAULT')
+            if (typeof defaultPhone !== 'undefined') {
+              if (defaultPhone.PhoneCountryCode && defaultPhone.PhoneAreaCode && defaultPhone.PhoneNumber) {
+                phone = defaultPhone.PhoneCountryCode + defaultPhone.PhoneAreaCode + defaultPhone.PhoneNumber
+              }
+              _contactItem.Phone = phone
+            }
           }
         }
 

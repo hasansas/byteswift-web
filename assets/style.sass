@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;400;600;700;800&display=swap')
+@import url('https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.min.css')
 
 //------------------------------------------
 //	   	variables
@@ -25,7 +26,7 @@ body
   background: white
   font-family: $font-family
   font-weight: 400
-  line-height: 1.75
+  line-height: 1.5
 
 .v-application
   p
@@ -74,7 +75,7 @@ body
 //------------------------------------------
 .v-application
   font-family: $font-family
-  line-height: 1.75
+  line-height: 1.5
 
   .secondary--text
     color: $secondary-color !important
@@ -102,7 +103,7 @@ body
     color: $primary-color
     -webkit-transition: all 0.35s
     transition: all 0.35s
-    color: #118b67!important
+    color: $primary-color
     &.text
       color: inherit
     &:hover
@@ -133,6 +134,14 @@ body
   max-width: 1320px !important
   position: relative
   z-index: 4
+
+//------------------------------------------
+//	   	section
+//------------------------------------------
+section
+  padding: 48px 0 32px
+  position: relative
+  z-index: 1
 
 //------------------------------------------
 //	   	button
