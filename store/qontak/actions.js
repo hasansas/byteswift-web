@@ -1,5 +1,6 @@
 import HttpRequest from '~/helpers/http_request.js';
 import { httpResponse } from '~/helpers/http_response.js';
+import { WhatsappTemplateModel } from "./model.js";
 
 export default {
   async createBroadcastRecipient({ commit }, { name, contacts }) {
@@ -59,6 +60,37 @@ export default {
             success: true,
             statusCode: 200,
             data: resData
+          })
+        );
+      });
+    });
+  },
+  getWhatsappTemplate({ }) {
+    const authUser = this.getters['users/auth'];
+    const httpRequest = new HttpRequest(this.$axios);
+
+    return new Promise(function (resolve) {
+      const _url = '/v1/qontak/templates';
+      const _headers = [
+        { name: 'Authorization', value: 'Bearer ' + authUser.token }
+      ];
+
+      httpRequest.get(_url, _headers).then(async function (res) {
+        if (!res.success) {
+          return resolve(res);
+        }
+
+        // get response data
+        const resData = res.data.data
+        const whatsappTemplateModel = WhatsappTemplateModel()
+        const templates = await whatsappTemplateModel.fromArray(resData);
+
+        // set response
+        resolve(
+          httpResponse({
+            success: true,
+            statusCode: 200,
+            data: templates
           })
         );
       });
