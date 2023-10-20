@@ -210,12 +210,6 @@ export default {
         qontak_whatsapp_channel_id: this.forms.qontak.input.whatsappChannelId,
       };
 
-      // this.configurations.qontak.token =
-      //   _request.qontak_token || this.configurations.qontak.token;
-      // this.configurations.qontak.whatsappChannelId =
-      //   _request.qontak_whatsapp_channel_id ||
-      //   this.configurations.qontak.whatsappChannelId;
-
       // update configuration
       const updateConfig = await this.$store.dispatch(
         "client/updateConfiguration",

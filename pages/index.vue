@@ -2,9 +2,9 @@
   <section>
     <v-container class="main-container">
       <v-card flat class="mx-auto text-center mt-16 mb-16 pb-8">
-        <h2 class="display-1">Qontak Integration</h2>
+        <h2 class="display-1">Send Whatsapp Message</h2>
         <h4 class="title mt-4">
-          Choose your application to integrate to Qontak
+          Choose your application to send whatsapp message
         </h4>
       </v-card>
       <v-row justify="center">
