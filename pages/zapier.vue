@@ -36,16 +36,20 @@
             <!-- Template -->
             <v-list-item>
               <v-list-item-icon>
-                <v-icon> ri-article-line </v-icon>
+                <v-icon> ri-whatsapp-line </v-icon>
               </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title> Whatsapp Template </v-list-item-title>
-                <v-list-item-subtitle v-if="whatsappTemplate.isLoaded">
+
+                <v-list-item-subtitle>
+                  Select template from Qontak
+                </v-list-item-subtitle>
+                <!-- <v-list-item-subtitle v-if="whatsappTemplate.isLoaded">
                   <span v-if="whatsappTemplate.selected !== null">
                     {{ whatsappTemplate.selected.name }}
                   </span>
                   <span v-else class="grey--text"> Not set </span>
-                </v-list-item-subtitle>
+                </v-list-item-subtitle> -->
               </v-list-item-content>
 
               <v-list-item-action>
@@ -53,6 +57,32 @@
                   <v-icon color="grey">ri-pencil-line</v-icon>
                 </v-btn>
               </v-list-item-action>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-content class="ml-10 py-0">
+                <v-list-item
+                  v-for="(item, index) in programRecomendedTemplate"
+                  :key="index"
+                >
+                  <v-list-item-icon class="mr-4">
+                    <v-icon size="16"> ri-article-line </v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title class="body-2">
+                      {{ item.name }}
+                    </v-list-item-title>
+
+                    <v-list-item-subtitle v-if="whatsappTemplate.isLoaded">
+                      <span
+                        v-if="item.template !== null && item.template !== ''"
+                      >
+                        {{ getTemplate(item.template).name }}
+                      </span>
+                      <span v-else class="grey--text"> Not set </span>
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-content>
             </v-list-item>
             <v-divider inset></v-divider>
 
@@ -105,14 +135,35 @@
           <v-toolbar-title class="ml-4"> Whatsapp Template </v-toolbar-title>
         </v-toolbar>
         <v-card-text class="py-0 mt-8">
+          <!-- program recomended -->
+          <v-select
+            v-model="
+              configurations.qontak.qontak_zoho_lead_created_program_recomended
+            "
+            label="Program Recomended"
+            :items="programRecomendedTemplate"
+            item-text="name"
+            item-value="value"
+            outlined
+            dense
+            hide-details
+            append-icon="ri-arrow-drop-down-line"
+            ref="inputSelectTemplate"
+            class="mb-4"
+            @change="selectProgram"
+          >
+            <template v-slot:prepend-inner>
+              <v-icon size="16" class="mt-1 mr-2"> ri-layout-2-line </v-icon>
+            </template>
+          </v-select>
+
           <!-- select template -->
           <v-select
             v-model="configurations.qontak.zohoLeadCreatedTemplateId"
-            label="Select template"
+            label="Template"
             :items="whatsappTemplate.rows"
             item-text="name"
             item-value="id"
-            single-line
             outlined
             dense
             hide-details
@@ -123,7 +174,7 @@
             class="mb-4"
           >
             <template v-slot:prepend-inner>
-              <v-icon size="16" class="mt-1 mr-2"> ri-layout-2-line </v-icon>
+              <v-icon size="16" class="mt-1 mr-2"> ri-article-line </v-icon>
             </template>
           </v-select>
 
@@ -145,7 +196,7 @@
               flat
               color="transparent"
               class="messages-container overflow-y-auto"
-              height="500"
+              height="400"
             >
               <v-list color="transparent">
                 <v-list-item v-if="whatsappTemplate.selected !== null">
@@ -167,11 +218,15 @@
               depressed
               large
               color="primary"
-              :disabled="whatsappTemplate.selected === null"
+              :disabled="
+                configurations.qontak.zohoLeadCreatedTemplateId === null ||
+                configurations.qontak
+                  .qontak_zoho_lead_created_program_recomended === null
+              "
               :loading="forms.disabled"
               @click="updateQontakConfiguratoin"
             >
-              Use this template
+              Save Changes
             </v-btn>
           </div>
         </v-card-actions>
@@ -181,7 +236,6 @@
 </template>
 
 <script>
-import crypto from "crypto";
 import { mapGetters } from "vuex";
 
 export default {
@@ -203,7 +257,8 @@ export default {
         isLoaded: false,
         isDisabled: false,
         qontak: {
-          zohoLeadCreatedTemplateId: "",
+          zohoLeadCreatedTemplateId: null,
+          qontak_zoho_lead_created_program_recomended: null,
         },
         apiKey: process.env.API_KEY,
         basicKey: "",
@@ -213,6 +268,23 @@ export default {
         selected: null,
         isLoaded: false,
       },
+      programRecomendedTemplate: [
+        {
+          name: "Program Recomended (Premium Internship Program)",
+          value: "option1",
+          template: null,
+        },
+        {
+          name: "Program Recomended (Career Coaching Program)",
+          value: "option2",
+          template: null,
+        },
+        {
+          name: "Program Recomended (Premium Internship or Career Coaching Program)",
+          value: "option3",
+          template: null,
+        },
+      ],
     };
   },
   methods: {
@@ -223,7 +295,30 @@ export default {
 
       this.whatsappTemplate.selected = selectedTemplate || null;
     },
+    selectProgram(val) {
+      const selectedProgram = this.programRecomendedTemplate.find(
+        (e) => e.value === val
+      );
+      if (selectedProgram.template) {
+        const templateId = selectedProgram.template;
+        const selectedTemplate = this.getTemplate(templateId);
+        this.configurations.qontak.zohoLeadCreatedTemplateId = templateId;
+        this.whatsappTemplate.selected = selectedTemplate || null;
+      } else {
+        this.configurations.qontak.zohoLeadCreatedTemplateId = null;
+        this.whatsappTemplate.selected = null;
+      }
+    },
+    getTemplate(templateId) {
+      const templates = this.whatsappTemplate.rows;
+      const selectedTemplate = templates.find((e) => e.id === templateId);
+      return selectedTemplate || null;
+    },
     editWhatsappTemplate() {
+      this.configurations.qontak.zohoLeadCreatedTemplateId = null;
+      this.configurations.qontak.qontak_zoho_lead_created_program_recomended =
+        null;
+      this.whatsappTemplate.selected = null;
       this.forms.dialog = true;
     },
     async getConfigurations() {
@@ -248,18 +343,60 @@ export default {
         return { ...current, ...item };
       }, {});
 
-      // set input configuration
+      // set configuration
       this.configurations.qontak.zohoLeadCreatedTemplateId =
         clientConfig.qontak_zoho_lead_created_template_id;
+
+      const programOption1 = this.programRecomendedTemplate.find(
+        (e) => e.value === "option1"
+      );
+      programOption1.template =
+        clientConfig.qontak_zoho_lead_created_program_recomended_option1_template_id;
+      const programOption2 = this.programRecomendedTemplate.find(
+        (e) => e.value === "option2"
+      );
+      programOption2.template =
+        clientConfig.qontak_zoho_lead_created_program_recomended_option2_template_id;
+      const programOption3 = this.programRecomendedTemplate.find(
+        (e) => e.value === "option3"
+      );
+      programOption3.template =
+        clientConfig.qontak_zoho_lead_created_program_recomended_option3_template_id;
     },
     async updateQontakConfiguratoin() {
       // disable form
       this.forms.disabled = true;
 
+      // get program
+      const programOption =
+        this.configurations.qontak.qontak_zoho_lead_created_program_recomended;
+
+      const selectedProgram = this.programRecomendedTemplate.find(
+        (e) => e.value === programOption
+      );
+      selectedProgram.template =
+        this.configurations.qontak.zohoLeadCreatedTemplateId;
+
+      const programOption1 = this.programRecomendedTemplate.find(
+        (e) => e.value === "option1"
+      );
+      const programOption2 = this.programRecomendedTemplate.find(
+        (e) => e.value === "option2"
+      );
+      const programOption3 = this.programRecomendedTemplate.find(
+        (e) => e.value === "option3"
+      );
+
       //  request body
       const _request = {
-        qontak_zoho_lead_created_template_id:
-          this.configurations.qontak.zohoLeadCreatedTemplateId,
+        // qontak_zoho_lead_created_template_id:
+        //   this.configurations.qontak.zohoLeadCreatedTemplateId,
+        qontak_zoho_lead_created_program_recomended_option1_template_id:
+          programOption1?.template || null,
+        qontak_zoho_lead_created_program_recomended_option2_template_id:
+          programOption2?.template || null,
+        qontak_zoho_lead_created_program_recomended_option3_template_id:
+          programOption3?.template || null,
       };
 
       // update configuration

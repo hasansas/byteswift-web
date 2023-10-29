@@ -7,3 +7,7 @@
     </v-main>
   </v-app>
 </template>
+
+<style lang="sass">
+@import "~/assets/style.sass"
+</style>
