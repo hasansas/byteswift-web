@@ -74,7 +74,11 @@
 
                     <v-list-item-subtitle v-if="whatsappTemplate.isLoaded">
                       <span
-                        v-if="item.template !== null && item.template !== ''"
+                        v-if="
+                          item.template !== null &&
+                          item.template !== '' &&
+                          getTemplate(item.template) !== null
+                        "
                       >
                         {{ getTemplate(item.template).name }}
                       </span>
@@ -312,6 +316,7 @@ export default {
     getTemplate(templateId) {
       const templates = this.whatsappTemplate.rows;
       const selectedTemplate = templates.find((e) => e.id === templateId);
+
       return selectedTemplate || null;
     },
     editWhatsappTemplate() {
@@ -351,17 +356,20 @@ export default {
         (e) => e.value === "option1"
       );
       programOption1.template =
-        clientConfig.qontak_zoho_lead_created_program_recomended_option1_template_id;
+        clientConfig.qontak_zoho_lead_created_program_recomended_option1_template_id ||
+        null;
       const programOption2 = this.programRecomendedTemplate.find(
         (e) => e.value === "option2"
       );
       programOption2.template =
-        clientConfig.qontak_zoho_lead_created_program_recomended_option2_template_id;
+        clientConfig.qontak_zoho_lead_created_program_recomended_option2_template_id ||
+        null;
       const programOption3 = this.programRecomendedTemplate.find(
         (e) => e.value === "option3"
       );
       programOption3.template =
-        clientConfig.qontak_zoho_lead_created_program_recomended_option3_template_id;
+        clientConfig.qontak_zoho_lead_created_program_recomended_option3_template_id ||
+        null;
     },
     async updateQontakConfiguratoin() {
       // disable form
