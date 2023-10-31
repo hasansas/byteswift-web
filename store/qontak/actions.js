@@ -4,6 +4,7 @@ import { WhatsappTemplateModel } from "./model.js";
 
 export default {
   async createBroadcastRecipient({ commit }, { name, contacts }) {
+    const authUser = this.getters['users/auth'];
     const httpRequest = new HttpRequest(this.$axios);
 
     return new Promise(function (resolve) {
@@ -12,9 +13,12 @@ export default {
         name: name,
         contacts: contacts
       }
+      const _headers = [
+        { name: 'Authorization', value: 'Bearer ' + authUser.token }
+      ];
 
       // send request
-      httpRequest.post(_url, _body).then(async (res) => {
+      httpRequest.post(_url, _body, _headers).then(async (res) => {
         if (!res.success) {
           return resolve(res);
         }
@@ -34,6 +38,7 @@ export default {
     });
   },
   async createBroadcast({ commit }, { name, messageTemplateId, contactListId, parameters }) {
+    const authUser = this.getters['users/auth'];
     const httpRequest = new HttpRequest(this.$axios);
 
     return new Promise(function (resolve) {
@@ -44,9 +49,12 @@ export default {
         "contact_list_id": contactListId,
         "parameters": parameters
       }
+      const _headers = [
+        { name: 'Authorization', value: 'Bearer ' + authUser.token }
+      ];
 
       // send request
-      httpRequest.post(_url, _body).then(async (res) => {
+      httpRequest.post(_url, _body, _headers).then(async (res) => {
         if (!res.success) {
           return resolve(res);
         }
