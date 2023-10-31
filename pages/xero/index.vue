@@ -25,6 +25,19 @@
         </v-card>
       </v-card>
       <template v-else>
+        <v-alert
+          v-if="
+            whatsappTemplate.input.template === '' ||
+            whatsappTemplate.input.template === null
+          "
+          text
+          color="red"
+          icon="ri-error-warning-line"
+          border="left"
+        >
+          Whatsapp template not set
+        </v-alert>
+
         <v-card flat class="rounded-lg mb-4">
           <v-toolbar flat outlined>
             <!-- organization -->
@@ -108,6 +121,7 @@
               outlined
               :disabled="
                 dataTable.rows.length === 0 ||
+                whatsappTemplate.input.template === '' ||
                 whatsappTemplate.input.template === null
               "
               @click="sendMessage"
